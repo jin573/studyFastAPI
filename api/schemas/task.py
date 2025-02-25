@@ -9,7 +9,31 @@ from pydantic import BaseModel, Field #PyDantic 라이브러리로 타입 힌트
 
 str|None 은 titel이 str 혹은 None을 허용한다는 의미. Optional[str] 로 사용해도 됨
 """
-class Task(BaseModel):
+
+class TaskBase(BaseModel):
+    title:str | None = Field(None, example = "세탁소에 맡긴 것을 찾으러 가기")
+
+class TaskCreate(TaskBase):
+    pass
+
+class TaskCreateResponse(TaskCreate):
     id: int
-    title :str | None = Field(None, example = "세탁소에 맡긴 것을 찾으러 가기")
+    
+    class Config:
+        orm_mode = True
+
+class Task(TaskBase):
+    id: int
+    done: bool = Field(False, description="완료 플래그")
+
+    class Config:
+        orm_mode = True
+
+"""class Task(BaseModel):
+    id: int
+    title:str | None = Field(None, example = "세탁소에 맡긴 것을 찾으러 가기")
     done: bool = Field(False, description = "완료 플래그")
+
+class TaskCreate(BaseModel):
+    title: str | None = Field(None, example="세탁소에 맡긴 것을 찾으러 가기")
+"""
