@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 import api.cruds.task as task_crud
@@ -12,8 +12,8 @@ async def list_tasks():
     pass
 """
 @router.get("/tasks", response_model=list[task_schema.Task])
-async def list_tasks():
-    return [task_schema.Task(id=1, title="첫 번째 todo 작업")]
+async def list_tasks(db:Session=Depends(get_db)):
+    return task_crud.get_tasks_with_done(db)
 
 @router.post("/tasks", response_model=task_schema.TaskCreateResponse)
 async def create_task(task_body: task_schema.TaskCreate, db:Session = Depends(get_db)): #의존성 주입
