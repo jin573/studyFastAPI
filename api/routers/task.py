@@ -24,9 +24,11 @@ async def update_task(task_id: int, task_body: task_schema.TaskCreate, db:Sessio
     task=task_crud.get_task(db, task_id=task_id)
     if task is None:
         raise HTTPException(status_code=404, detail="Task not found") #예외를 발생
-
     return task_crud.update_task(db, task_body, original=task)
 
-@router.delete("/tasks/{task_id}")
-async def delete_task(task_id: int):
-    return
+@router.delete("/tasks/{task_id}", response_model=None)
+async def delete_task(task_id: int, db:Session=Depends(get_db)):
+    task = task_crud.get_task(db, task_id=task_id)
+    if task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return task_crud.delete_task(db, original=task)
