@@ -23,3 +23,19 @@ def get_tasks_with_done(db:Session) -> list[tuple[int, str, bool]]:
         ).outerjoin(task_model.Done)
     )
     return result.all()
+
+#result 객체는 여러 튜플로 반환된다.
+#하지만 select로는 Task라는 테이블 자체를 반환하게 되므로 
+#scalars로 값 자체를 반환
+def get_task(db:Session, task_id:int) -> task_model.Task|None:
+    result:Result = db.execute(
+        select(task_model.Task).filter(task_model.Task.id==task_id)
+    )
+    return result.scalars().first()
+
+def update_task(db:Session, task_create:task_schema.TaskCreate, original:task_model.Task)->task_model.Task:
+    original.title=task_create.title
+    db.add(original)
+    db.commit()
+    db.refresh(original)
+    return original
