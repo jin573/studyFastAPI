@@ -1,5 +1,5 @@
 #비동기 함수로 변경
-form sqlalchemy.ext.asyncio import create_async_engine, AsyncSession #데이터베이스 연결 라이브러리 pymysql -> aiomysql
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession #데이터베이스 연결 라이브러리 pymysql -> aiomysql
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 ASYNC_DB_URL = "mysql+aiomysql://root@db:3306/demo?charset=utf8"
@@ -9,9 +9,12 @@ async_session = sessionmaker(
     autocommit=False, autoflush=False, bind=async_engine, class_=AsyncSession
 )
 
+Base=declarative_base() #orm에서 사용하는 기본 클래스를 생성
+
 async def get_db():
     async with async_session() as session:
         yield session
+
 
 """from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
